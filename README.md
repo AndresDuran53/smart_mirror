@@ -8,6 +8,15 @@ A custom version of a Smart Mirror
 ## Quick Start
 ### Libraries needed
 
+* requests
+* paho-mqtt
+* pytz
+* ephem
+
+### Image Example
+
+[<img src="media/NetworkControllerDiagram.jpg" alt="Code Diagram">](media/NetworkControllerDiagram.jpg)
+
 ----
 
 ## Implementations
