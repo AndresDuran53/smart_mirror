@@ -1,0 +1,23 @@
+{
+    "mqtt":{
+        "broker_address": "localhost",
+        "mqtt_user": "user",
+        "mqtt_pass": "password"
+    },
+    "homeAssistant":{
+        "url":"http://localhost:8123/api",
+        "ha_token":"111111111111111111111111111",
+        "calendars":[
+            {
+                "owner":"Person",
+                "id":"calendar.person"
+            }
+        ]
+    },
+    "openWeather":{
+        "latitude":"0",
+        "longitude":"0",
+        "weather_unit":"metric",
+        "weather_api_token":"111111111111111"
+    }
+}

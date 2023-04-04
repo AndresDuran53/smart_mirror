@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Custom
+secrets.py
+configuration.json
+smartMirror.mainFail.log
+scripts/imageSlider/images/*

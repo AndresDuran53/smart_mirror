@@ -1,0 +1,13 @@
+[Unit]
+Description=The services that check the temperature and controll the fans
+
+[Service]
+ExecStart=/usr/bin/python3 -u /home/pi/smart_mirror/scripts/tempControl.py
+WorkingDirectory=/home/pi/smart_mirror
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target 
