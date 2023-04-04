@@ -15,7 +15,7 @@ A custom version of a Smart Mirror
 
 ### Image Example
 
-[<img src="media/NetworkControllerDiagram.jpg" alt="Code Diagram">](media/NetworkControllerDiagram.jpg)
+[<img src="media/Screenshot_example.png" alt="Example Image 1">](media/Screenshot_example.png)
 
 ----
 
