@@ -9,7 +9,7 @@ from libs.configuration_reader import ConfigurationReader
 from libs.smartmirror_utils import log
 from libs.face_detection import FaceDetectorApp
 from libs.celestial_body_viewer import CelestialBodyViewer
-from libs.generic_camera import GenericCamera
+from libs.generic_camera import CameraManager
 
 try:
     from scripts.buttonsReader import ButtonController
@@ -33,7 +33,7 @@ class Application:
         self.connectMqtt(config_data)
 
         #Create Camera Objects
-        self.camera_list = GenericCamera.list_from_json(config_data)
+        self.camera_manager = CameraManager(config_data)
 
         #Creating UI object
         self.ui_controller = UIController()
@@ -135,12 +135,8 @@ class Application:
 
     def update_videoframe(self):
         if(self.has_to_show_camera):
-            self.cam = GenericCamera.find_by_name("Front Camera",self.camera_list)
-            self.cam.connect()
-            photo = self.cam.get_photo()
+            photo = self.camera_manager.get_photo()
             self.ui_controller.update_videocamera_photo(photo)
-        else:
-            self.cam.release()
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
@@ -180,8 +176,11 @@ class Application:
     def read_buttons(self):
         value = self.button_controller.execute_if_pressed()
         if(value == 1):
+            self.camera_manager.next_connection()
             self.has_to_show_camera = True
         elif(value == 2):
+            self.camera_manager.disconnect_camera()
+            self.camera_manager.next_index = 0
             self.has_to_show_camera = False
         self.update_screen_showing_frames()
 
@@ -210,8 +209,8 @@ if __name__ == '__main__':
     thread_events_update = IteratedThreadWithDelay(app.update_events,120)
     thread_events_update.start()
 
-    thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
-    thread_weather_update.start()
+    #thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
+    #thread_weather_update.start()
 
     thread_next_picture = IteratedThreadWithDelay(app.show_next_picture_slide,300)
     thread_next_picture.start()
@@ -226,7 +225,7 @@ if __name__ == '__main__':
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.1)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.05)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()

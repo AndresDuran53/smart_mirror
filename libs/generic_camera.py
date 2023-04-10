@@ -18,10 +18,11 @@ class GenericCamera:
         return True
     
     def read_frame(self):
-        ret, frame = self.cap.read()
-        if not ret:
-            return None
-        return frame
+        if(self.cap is not None):
+            ret, frame = self.cap.read()
+            if ret:
+                return frame
+        return None
 
     def release(self):
         if(self.cap is not None):
@@ -61,3 +62,38 @@ class GenericCamera:
         for camera_json in list_cameras_json:
             final_list.append(GenericCamera.from_json(camera_json))
         return final_list
+    
+
+class CameraManager:
+    def __init__(self, json_config):
+        self.next_index = 0
+        self.actual_camera = None
+        self.camera_list = GenericCamera.list_from_json(json_config)
+
+    def move_next_index(self):
+        self.next_index = (self.next_index+1)%len(self.camera_list)
+
+    def get_next_camera(self) -> GenericCamera:
+        next_camera = self.camera_list[self.next_index]
+        self.move_next_index()
+        print("Next Camera assigned", next_camera.name)
+        return next_camera
+
+    def next_connection(self):
+        if(self.actual_camera is not None):
+            self.actual_camera.release()
+            print("Realising Camera", self.actual_camera.name, "to use next one")
+        self.actual_camera = self.get_next_camera()
+        connected = self.actual_camera.connect()
+        print("Connecting to Camera", self.actual_camera.name)
+        if(not connected):
+            self.actual_camera = None
+
+    def disconnect_camera(self):
+        if(self.actual_camera is not None):
+            self.actual_camera.release()
+        self.actual_camera = None
+
+    def get_photo(self):
+        if(self.actual_camera is not None):
+            return self.actual_camera.get_photo()
