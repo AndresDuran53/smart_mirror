@@ -185,8 +185,8 @@ if __name__ == '__main__':
     thread_events_update = IteratedThreadWithDelay(app.update_events,120)
     thread_events_update.start()
 
-    thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
-    thread_weather_update.start()
+    #thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
+    #thread_weather_update.start()
 
     thread_next_picture = IteratedThreadWithDelay(app.show_next_picture_slide,300)
     thread_next_picture.start()
@@ -196,5 +196,8 @@ if __name__ == '__main__':
 
     thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.03)
     thread_face_recognition.start()
+
+    thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
+    thread_button_reader.start()
 
     app.run_ui_mainloop()

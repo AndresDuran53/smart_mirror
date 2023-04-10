@@ -65,9 +65,7 @@ class ButtonController:
     def execute_if_pressed(self):
         pressed = self.get_first_button_pressed()
         if pressed:
-            print("------------")
-            print(pressed)
-            print("------------")
+            print("Button pressed:",pressed)
             if pressed == 1:
                 pass
             elif pressed == 2:
