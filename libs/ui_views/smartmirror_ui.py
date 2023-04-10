@@ -4,6 +4,7 @@ from .celestial_frame import MoonFrame,SunsetFrame
 from .calendar_frame import Calendar
 from .clock_frame import Clock
 from .weather_frame import Weather
+from .videocamera_frame import VideoFrame
 
 class FullscreenWindow:
     padding_x = 30
@@ -59,6 +60,15 @@ class FullscreenWindow:
                                         fontColor_parent = self.fontColor, 
                                         fontStyle_parent = self.fontStyle)
         self.picture_frame.pack(side=TOP)
+        self.picture_frame.pack_forget()
+
+    def create_videocamera_frame(self):
+        self.videocamera_frame = VideoFrame(self.midFrame, 
+                                        background_parent = self.background, 
+                                        fontColor_parent = self.fontColor, 
+                                        fontStyle_parent = self.fontStyle)
+        self.videocamera_frame.pack(side=TOP)
+        self.videocamera_frame.pack_forget()
     
     def create_calender_frame(self):            
         self.calender = Calendar(self.midFrame, self.calendar_icon,
@@ -74,6 +84,7 @@ class FullscreenWindow:
         self.create_moon_frame()
         self.create_sunset_frame()
         self.create_picture_frame()
+        self.create_videocamera_frame()
         self.create_calender_frame()
 
     def update_weather(self,icon_image,new_forecast,new_temperature):
@@ -125,3 +136,13 @@ class FullscreenWindow:
             self.moon_frame.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
         if(not self.sunset_frame.winfo_ismapped()):
             self.sunset_frame.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
+
+    def update_videocamera_photo(self,photo):
+        self.videocamera_frame.update_photo(photo)
+
+    def remove_videocamera_frame(self):
+        self.videocamera_frame.pack_forget()
+    
+    def show_videocamera_frame(self):
+        if(not self.videocamera_frame.winfo_ismapped()):
+            self.videocamera_frame.pack(side=TOP)

@@ -9,6 +9,7 @@ from libs.configuration_reader import ConfigurationReader
 from libs.smartmirror_utils import log
 from libs.face_detection import FaceDetectorApp
 from libs.celestial_body_viewer import CelestialBodyViewer
+from libs.generic_camera import GenericCamera
 
 try:
     from scripts.buttonsReader import ButtonController
@@ -20,6 +21,7 @@ except:
 class Application:
     is_person_detected = False
     show_information = False
+    has_to_show_camera = False
     stored_events = []
 
     def __init__(self):
@@ -29,6 +31,9 @@ class Application:
         
         #Creating Mqtt objects
         self.connectMqtt(config_data)
+
+        #Create Camera Objects
+        self.camera_list = GenericCamera.list_from_json(config_data)
 
         #Creating UI object
         self.ui_controller = UIController()
@@ -128,15 +133,30 @@ class Application:
         except Exception as e:
             log("Error: Cannot update picture slide. " + str(e))
 
+    def update_videoframe(self):
+        if(self.has_to_show_camera):
+            self.cam = GenericCamera.find_by_name("Front Camera",self.camera_list)
+            self.cam.connect()
+            photo = self.cam.get_photo()
+            self.ui_controller.update_videocamera_photo(photo)
+            #self.cam.release()
+
     def update_screen_showing_frames(self):
-        if(self.show_information):
+        if(self.has_to_show_camera):
+            self.ui_controller.remove_slide_picture()
+            self.ui_controller.remove_events()
+            self.ui_controller.remove_extra_information()
+            self.ui_controller.show_videocamera_photo()
+        elif(self.show_information):
             self.ui_controller.remove_slide_picture()
             self.ui_controller.show_extra_information()
             self.ui_controller.update_events(self.stored_events) 
+            self.ui_controller.remove_videocamera_photo()
         else:
             self.ui_controller.remove_events()
             self.ui_controller.remove_extra_information()
             self.ui_controller.show_picture_slide()
+            self.ui_controller.remove_videocamera_photo()
                       
     def execute_face_recognition(self):
         try:
@@ -157,7 +177,11 @@ class Application:
             log("Error: Cannot execute face recognition. " + str(e))
 
     def read_buttons(self):
-        self.button_controller.execute_if_pressed()
+        value = self.button_controller.execute_if_pressed()
+        if(value == 1):
+            self.has_to_show_camera = True
+        elif(value == 2):
+            self.has_to_show_camera = False
 
     def communicate_value(self,topic,value):
         if(self.mqttConnected):
@@ -178,15 +202,14 @@ class Application:
         except Exception as e:
             log("MainException: "+str(e))
 
-
 if __name__ == '__main__':
     app = Application()
 
     thread_events_update = IteratedThreadWithDelay(app.update_events,120)
     thread_events_update.start()
 
-    #thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
-    #thread_weather_update.start()
+    thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
+    thread_weather_update.start()
 
     thread_next_picture = IteratedThreadWithDelay(app.show_next_picture_slide,300)
     thread_next_picture.start()
@@ -197,7 +220,11 @@ if __name__ == '__main__':
     thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.03)
     thread_face_recognition.start()
 
-    thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
-    thread_button_reader.start()
+    if(is_raspberry_pi):
+        thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
+        thread_button_reader.start()
+
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.1)
+    thread_videocamera_view.start()
 
     app.run_ui_mainloop()

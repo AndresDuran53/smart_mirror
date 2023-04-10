@@ -45,3 +45,12 @@ class UIController():
 
     def remove_extra_information(self):
         self.fullscreenWindow.remove_extra_information()
+
+    def update_videocamera_photo(self,photo):
+        self.fullscreenWindow.update_videocamera_photo(photo)
+    
+    def show_videocamera_photo(self):
+        self.fullscreenWindow.show_videocamera_frame()
+
+    def remove_videocamera_photo(self):
+        self.fullscreenWindow.remove_videocamera_frame()
