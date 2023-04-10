@@ -106,8 +106,11 @@ class FullscreenWindow:
         self.picture_frame.show_new_slide(new_img)
 
     def update_events(self,new_formatted_events):
-        self.show_events()
-        self.calender.update_ui_events(new_formatted_events)
+        try:
+            self.show_events()
+            self.calender.update_ui_events(new_formatted_events)
+        except:
+            print("Error on smartmirror_ui.py update_events()")
 
     def show_slides(self):
         if(not self.picture_frame.winfo_ismapped()):

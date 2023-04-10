@@ -139,7 +139,8 @@ class Application:
             self.cam.connect()
             photo = self.cam.get_photo()
             self.ui_controller.update_videocamera_photo(photo)
-            #self.cam.release()
+        else:
+            self.cam.release()
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
@@ -182,6 +183,7 @@ class Application:
             self.has_to_show_camera = True
         elif(value == 2):
             self.has_to_show_camera = False
+        self.update_screen_showing_frames()
 
     def communicate_value(self,topic,value):
         if(self.mqttConnected):

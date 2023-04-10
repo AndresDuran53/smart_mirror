@@ -24,8 +24,10 @@ class GenericCamera:
         return frame
 
     def release(self):
-        self.cap.release()
-        cv2.destroyAllWindows()
+        if(self.cap is not None):
+            self.cap.release()
+            cv2.destroyAllWindows()
+            self.cap = None
 
     def get_photo(self):
         frame_image = self.read_frame()
