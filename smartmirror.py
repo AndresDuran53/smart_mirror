@@ -26,11 +26,9 @@ class Application:
         localPathImages = f"{os.path.dirname(os.path.realpath(__file__))}/"
         #Creating Configuration object
         config_data = ConfigurationReader.read_config_file(localPathImages)
+        
         #Creating Mqtt objects
-        topics_sub = ["smartmirror/play/sound","smartmirror/open/","smartmirror/event/add"]
-        self.topic_state_pub = "smartmirror/camera/person/detected"
-        mqtt_config = MqttConfig.from_json(config_data)
-        self.mqtt_controller = MqttController(mqtt_config,self.on_message,"SmartMirror",topics_sub)
+        self.connectMqtt(config_data)
 
         #Creating UI object
         self.ui_controller = UIController()
@@ -66,6 +64,16 @@ class Application:
         self.update_moon()
         self.update_sun()
         self.update_screen_showing_frames()
+
+    def connectMqtt(self,config_data):
+        try:
+            topics_sub = ["smartmirror/play/sound","smartmirror/open/","smartmirror/event/add"]
+            self.topic_state_pub = "smartmirror/camera/person/detected"
+            mqtt_config = MqttConfig.from_json(config_data)
+            self.mqtt_controller = MqttController(mqtt_config,self.on_message,"SmartMirror",topics_sub)
+            self.mqttConnected = True
+        except:
+            self.mqttConnected = False
 
     def get_screen_dimensions(self):
         self.screen_width = self.ui_controller.fullscreenWindow.tk.winfo_screenwidth()
@@ -139,9 +147,11 @@ class Application:
                 self.is_person_detected = new_person_detected
                 self.show_information = self.is_person_detected
                 if(self.show_information):
-                    self.mqtt_controller.send_message(self.topic_state_pub,"1")
+                    self.communicate_value(self.topic_state_pub,"1")
+                    pass
                 else:
-                    self.mqtt_controller.send_message(self.topic_state_pub,"0")
+                    self.communicate_value(self.topic_state_pub,"0")
+                    pass
                 self.update_screen_showing_frames()     
         except Exception as e:
             log("Error: Cannot execute face recognition. " + str(e))
@@ -149,6 +159,11 @@ class Application:
     def read_buttons(self):
         self.button_controller.execute_if_pressed()
 
+    def communicate_value(self,topic,value):
+        if(self.mqttConnected):
+            self.mqtt_controller.send_message(topic,value)
+        else:
+            log("Mqtt is not connected")
 
     def on_message(self,client, userdata, message):
         message_recieved = str(message.payload.decode("utf-8"))
