@@ -234,7 +234,7 @@ if __name__ == '__main__':
     thread_celestial_body_update = IteratedThreadWithDelay(app.update_celestial_bodies,600)
     thread_celestial_body_update.start()
 
-    thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.03)
+    thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.1)
     thread_face_recognition.start()
 
     if(is_raspberry_pi):
