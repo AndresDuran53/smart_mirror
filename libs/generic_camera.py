@@ -19,7 +19,9 @@ class GenericCamera:
         return True
     
     def read_frame(self):
-        if(self.cap is not None):
+        if (self.cap is None):
+            self.connect()
+        if (self.cap is not None):
             ret, frame = self.cap.read()
             if ret: return frame
         return None
@@ -39,14 +41,6 @@ class GenericCamera:
             photo = ImageTk.PhotoImage(image)
             return photo
         return None
-    
-    def __enter__(self):
-        if (self.cap is None):
-            self.connect()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.release_camera()
 
     @staticmethod
     def find_by_name(name,camera_list):
@@ -90,9 +84,15 @@ class CameraManager:
         print("Next Camera assigned", next_camera.name)
         return next_camera
 
-    def next_connection(self):          
+    def next_connection(self):
+        last_camera = self.actual_camera
         self.actual_camera = self.get_next_camera()
+        if(last_camera is not None):
+            last_camera.release_camera()
 
     def get_photo(self):
-        with self.actual_camera as camera:
-            return camera.get_photo()
+        photo = self.actual_camera.get_photo()
+        return photo
+    
+    def disconnect_camera(self):
+        self.actual_camera.release_camera()

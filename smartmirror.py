@@ -189,9 +189,9 @@ class Application:
         self.has_to_show_camera = True
 
     def disconnect_showing_camera(self):
-        self.camera_manager.disconnect_camera()
-        self.camera_manager.next_index = 0
         self.has_to_show_camera = False
+        self.camera_manager.next_index = 0
+        self.camera_manager.disconnect_camera()
 
     def communicate_value(self,topic,value):
         if(self.mqttConnected):
@@ -234,7 +234,7 @@ if __name__ == '__main__':
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.01)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.1)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()
