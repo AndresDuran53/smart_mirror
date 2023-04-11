@@ -11,6 +11,7 @@ class GenericCamera:
         self.cap = None
     
     def connect(self):
+        print("Connecting to camera:",self.name)
         self.cap = cv2.VideoCapture(self.url)
         if not self.cap.isOpened():
             print("No se pudo abrir la camara")
@@ -20,17 +21,18 @@ class GenericCamera:
     def read_frame(self):
         if(self.cap is not None):
             ret, frame = self.cap.read()
-            if ret:
-                return frame
+            if ret: return frame
         return None
 
-    def release(self):
+    def release_camera(self):
+        print("Releasing camera:",self.name)
         if(self.cap is not None):
             self.cap.release()
-            cv2.destroyAllWindows()
+            #cv2.destroyAllWindows()
             self.cap = None
 
     def get_photo(self):
+        print("Getting Photo")
         frame_image = self.read_frame()
         if frame_image is not None:
             image = cv2.cvtColor(frame_image, cv2.COLOR_BGR2RGB)
@@ -69,6 +71,8 @@ class CameraManager:
         self.next_index = 0
         self.actual_camera = None
         self.camera_list = GenericCamera.list_from_json(json_config)
+        for camera in self.camera_list:
+            print("Camera added: ",camera.name)
 
     def move_next_index(self):
         self.next_index = (self.next_index+1)%len(self.camera_list)
@@ -80,19 +84,19 @@ class CameraManager:
         return next_camera
 
     def next_connection(self):
-        if(self.actual_camera is not None):
-            self.actual_camera.release()
-            print("Realising Camera", self.actual_camera.name, "to use next one")
+        self.disconnect_camera()            
         self.actual_camera = self.get_next_camera()
         connected = self.actual_camera.connect()
-        print("Connecting to Camera", self.actual_camera.name)
+        print("Connected to Camera", self.actual_camera.name)
         if(not connected):
             self.actual_camera = None
+            print("No connected")
 
     def disconnect_camera(self):
         if(self.actual_camera is not None):
-            self.actual_camera.release()
+            self.actual_camera.release_camera()
         self.actual_camera = None
+        print("Disconnected Camera", self.actual_camera.name)
 
     def get_photo(self):
         if(self.actual_camera is not None):
