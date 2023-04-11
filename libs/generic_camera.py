@@ -95,8 +95,8 @@ class CameraManager:
     def disconnect_camera(self):
         if(self.actual_camera is not None):
             self.actual_camera.release_camera()
-        self.actual_camera = None
-        print("Disconnected Camera", self.actual_camera.name)
+            print("Disconnected Camera", self.actual_camera.name)
+            self.actual_camera = None
 
     def get_photo(self):
         if(self.actual_camera is not None):
