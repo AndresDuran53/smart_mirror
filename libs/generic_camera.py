@@ -11,7 +11,6 @@ class GenericCamera:
         self.cap = None
     
     def connect(self):
-        #print("Connecting to camera:",self.name)
         self.cap = cv2.VideoCapture(self.url)
         if not self.cap.isOpened():
             print("No se pudo abrir la camara")
@@ -29,16 +28,16 @@ class GenericCamera:
         return None
 
     def release_camera(self):
-        #print("Releasing camera:", self.name)
         if (self.is_connected()): self.cap.release()
         self.cap = None
 
-    def get_photo(self):
+    def get_photo(self) -> ImageTk.PhotoImage:
         frame_image = self.read_frame()
         if frame_image is not None:
             image = cv2.cvtColor(frame_image, cv2.COLOR_BGR2RGB)
             image = Image.fromarray(image)
             photo = ImageTk.PhotoImage(image)
+            self.release_camera()
             return photo
         return None
 
@@ -70,6 +69,9 @@ class GenericCamera:
 class CameraManager:
     counter = 0
     show_every = 2
+    actual_camera: GenericCamera
+    camera_list: list[GenericCamera]
+
     def __init__(self, json_config):
         self.next_index = 0
         self.actual_camera = None
@@ -80,21 +82,11 @@ class CameraManager:
     def move_next_index(self):
         self.next_index = (self.next_index+1)%len(self.camera_list)
 
-    def get_next_camera(self) -> GenericCamera:
-        next_camera = self.camera_list[self.next_index]
-        self.move_next_index()
-        print("Next Camera assigned", next_camera.name)
-        return next_camera
-
     def next_connection(self):
-        last_camera = self.actual_camera
-        self.actual_camera = self.get_next_camera()
-        if(last_camera is not None): last_camera.release_camera()
+        self.actual_camera = self.camera_list[self.next_index]
+        self.move_next_index()
+        print("Next Camera assigned", self.actual_camera.name)
 
-    def get_photo(self):
+    def get_photo(self) -> ImageTk.PhotoImage:
         photo = self.actual_camera.get_photo()
-        self.actual_camera.release_camera()
         return photo
-    
-    def disconnect_camera(self):
-        self.actual_camera.release_camera()

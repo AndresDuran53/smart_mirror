@@ -20,7 +20,7 @@ except:
 
 class Application:
     is_person_detected = False
-    show_information = False
+    show_information = True
     has_to_show_camera = False
     stored_events = []
 
@@ -68,6 +68,8 @@ class Application:
         #self.update_weather()
         self.update_moon()
         self.update_sun()
+        self.camera_manager.next_index=2
+        self.set_new_camera_to_show()
         self.update_screen_showing_frames()
 
     def connectMqtt(self,config_data):
@@ -194,7 +196,6 @@ class Application:
     def disconnect_showing_camera(self):
         self.has_to_show_camera = False
         self.camera_manager.next_index = 0
-        self.camera_manager.disconnect_camera()
         self.ui_controller.update_videocamera_photo(None)
 
     def communicate_value(self,topic,value):
