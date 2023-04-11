@@ -20,7 +20,7 @@ class ButtonController:
         self.reset_transistor()
 
     def configure_pins(self):
-        GPIO.cleanup()  # cleanup all GPIO
+        #GPIO.cleanup()  # cleanup all GPIO
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.transistor_pin, GPIO.OUT)
         for button_pin in self.button_pins:

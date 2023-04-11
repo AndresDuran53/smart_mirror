@@ -135,8 +135,11 @@ class Application:
 
     def update_videoframe(self):
         if(self.has_to_show_camera):
-            photo = self.camera_manager.get_photo()
-            self.ui_controller.update_videocamera_photo(photo)
+            try:
+                photo = self.camera_manager.get_photo()
+                self.ui_controller.update_videocamera_photo(photo)
+            except Exception as e:
+                log("Unable to update videoframe: " + str(e))
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
@@ -176,13 +179,19 @@ class Application:
     def read_buttons(self):
         value = self.button_controller.execute_if_pressed()
         if(value == 1):
-            self.camera_manager.next_connection()
-            self.has_to_show_camera = True
+            self.set_new_camera_to_show()
         elif(value == 2):
-            self.camera_manager.disconnect_camera()
-            self.camera_manager.next_index = 0
-            self.has_to_show_camera = False
+            self.disconnect_showing_camera()
         self.update_screen_showing_frames()
+
+    def set_new_camera_to_show(self):
+        self.camera_manager.next_connection()
+        self.has_to_show_camera = True
+
+    def disconnect_showing_camera(self):
+        self.camera_manager.disconnect_camera()
+        self.camera_manager.next_index = 0
+        self.has_to_show_camera = False
 
     def communicate_value(self,topic,value):
         if(self.mqttConnected):
@@ -225,7 +234,7 @@ if __name__ == '__main__':
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.05)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,1)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()
