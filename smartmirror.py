@@ -51,7 +51,7 @@ class Application:
         #Creating ButtonController
         if(is_raspberry_pi):
             transistor_pin = 14
-            button_pins = [15, 24, 23]
+            button_pins = [15, 24]
             self.button_controller = ButtonController(transistor_pin, button_pins)
 
         #Getting UI Values
