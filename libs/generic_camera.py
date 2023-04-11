@@ -49,13 +49,13 @@ class GenericCamera:
         return None
 
     @staticmethod
-    def from_json(self,json_config):
+    def from_json(json_config):
         name = json_config['name']
         ip = json_config['ip']
         username = json_config['username']
         password = json_config['password']
         channel = json_config['channel']
-        return self(name, ip, username, password, channel)
+        return GenericCamera(name, ip, username, password, channel)
     
     @staticmethod
     def list_from_json(json_config):
