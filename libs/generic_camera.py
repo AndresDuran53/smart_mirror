@@ -11,7 +11,7 @@ class GenericCamera:
         self.cap = None
     
     def connect(self):
-        print("Connecting to camera:",self.name)
+        #print("Connecting to camera:",self.name)
         self.cap = cv2.VideoCapture(self.url)
         if not self.cap.isOpened():
             print("No se pudo abrir la camara")
@@ -29,7 +29,7 @@ class GenericCamera:
         return None
 
     def release_camera(self):
-        print("Releasing camera:", self.name)
+        #print("Releasing camera:", self.name)
         if (self.is_connected()): self.cap.release()
         self.cap = None
 
@@ -69,7 +69,7 @@ class GenericCamera:
 
 class CameraManager:
     counter = 0
-    show_every = 5
+    show_every = 2
     def __init__(self, json_config):
         self.next_index = 0
         self.actual_camera = None
@@ -93,11 +93,8 @@ class CameraManager:
 
     def get_photo(self):
         photo = self.actual_camera.get_photo()
-        self.counter += 1
-        if(self.counter>=self.show_every):
-            self.counter = 0
-            return photo
-        return None
+        self.actual_camera.release_camera()
+        return photo
     
     def disconnect_camera(self):
         self.actual_camera.release_camera()
