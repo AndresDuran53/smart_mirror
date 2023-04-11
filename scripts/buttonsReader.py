@@ -51,7 +51,7 @@ class ButtonController:
             time.sleep(1)
             results = self.read_all_pins()
             print("READERS:", results)
-            if (results[0] == results[1] == results[2]):
+            if (results[0] == results[1]):
                 new_readed_value = results[0]
                 if readed_value == new_readed_value:
                     cont += 1
