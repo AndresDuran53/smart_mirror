@@ -28,7 +28,6 @@ class GenericCamera:
         print("Releasing camera:",self.name)
         if(self.cap is not None):
             self.cap.release()
-            #cv2.destroyAllWindows()
             self.cap = None
 
     def get_photo(self):
@@ -40,6 +39,14 @@ class GenericCamera:
             photo = ImageTk.PhotoImage(image)
             return photo
         return None
+    
+    def __enter__(self):
+        if (self.cap is None):
+            self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.release_camera()
 
     @staticmethod
     def find_by_name(name,camera_list):
@@ -83,21 +90,9 @@ class CameraManager:
         print("Next Camera assigned", next_camera.name)
         return next_camera
 
-    def next_connection(self):
-        self.disconnect_camera()            
+    def next_connection(self):          
         self.actual_camera = self.get_next_camera()
-        connected = self.actual_camera.connect()
-        print("Connected to Camera", self.actual_camera.name)
-        if(not connected):
-            self.actual_camera = None
-            print("No connected")
-
-    def disconnect_camera(self):
-        if(self.actual_camera is not None):
-            self.actual_camera.release_camera()
-            print("Disconnected Camera", self.actual_camera.name)
-            self.actual_camera = None
 
     def get_photo(self):
-        if(self.actual_camera is not None):
-            return self.actual_camera.get_photo()
+        with self.actual_camera as camera:
+            return camera.get_photo()
