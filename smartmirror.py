@@ -137,7 +137,8 @@ class Application:
         if(self.has_to_show_camera):
             try:
                 photo = self.camera_manager.get_photo()
-                self.ui_controller.update_videocamera_photo(photo)
+                if(photo is not None):
+                    self.ui_controller.update_videocamera_photo(photo)
             except Exception as e:
                 log("Unable to update videoframe: " + str(e))
 

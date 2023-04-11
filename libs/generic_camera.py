@@ -33,7 +33,6 @@ class GenericCamera:
             self.cap = None
 
     def get_photo(self):
-        print("Getting Photo")
         frame_image = self.read_frame()
         if frame_image is not None:
             image = cv2.cvtColor(frame_image, cv2.COLOR_BGR2RGB)
@@ -68,6 +67,8 @@ class GenericCamera:
     
 
 class CameraManager:
+    counter = 0
+    show_every = 5
     def __init__(self, json_config):
         self.next_index = 0
         self.actual_camera = None
@@ -92,7 +93,11 @@ class CameraManager:
 
     def get_photo(self):
         photo = self.actual_camera.get_photo()
-        return photo
+        self.counter += 1
+        if(self.counter>=self.show_every):
+            self.counter
+            return photo
+        return None
     
     def disconnect_camera(self):
         self.actual_camera.release_camera()
