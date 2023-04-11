@@ -238,7 +238,7 @@ if __name__ == '__main__':
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.001)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()
