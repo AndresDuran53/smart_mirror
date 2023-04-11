@@ -68,7 +68,7 @@ class GenericCamera:
 
 class CameraManager:
     counter = 0
-    show_every = 5
+    show_every = 50
     def __init__(self, json_config):
         self.next_index = 0
         self.actual_camera = None
@@ -95,7 +95,7 @@ class CameraManager:
         photo = self.actual_camera.get_photo()
         self.counter += 1
         if(self.counter>=self.show_every):
-            self.counter
+            self.counter = 0
             return photo
         return None
     

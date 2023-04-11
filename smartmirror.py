@@ -179,11 +179,13 @@ class Application:
 
     def read_buttons(self):
         value = self.button_controller.execute_if_pressed()
-        if(value == 1):
+        if(value == 0): return
+        elif(value == 1):
             self.set_new_camera_to_show()
+            self.update_screen_showing_frames()
         elif(value == 2):
             self.disconnect_showing_camera()
-        self.update_screen_showing_frames()
+            self.update_screen_showing_frames()
 
     def set_new_camera_to_show(self):
         self.camera_manager.next_connection()
@@ -193,6 +195,7 @@ class Application:
         self.has_to_show_camera = False
         self.camera_manager.next_index = 0
         self.camera_manager.disconnect_camera()
+        self.ui_controller.update_videocamera_photo(None)
 
     def communicate_value(self,topic,value):
         if(self.mqttConnected):
@@ -235,7 +238,7 @@ if __name__ == '__main__':
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.1)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.001)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()
