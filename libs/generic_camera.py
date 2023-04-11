@@ -2,22 +2,22 @@ import cv2
 from PIL import Image, ImageTk
 
 class GenericCamera:
+    name: str
+    url: str
+
     def __init__(self, name, ip, username, password, channel):
         self.name = name
-        self.ip = ip
-        self.username = username
-        self.password = password
-        self.url = f"rtsp://{self.username}:{self.password}@{self.ip}:554/cam/realmonitor?channel={channel}&subtype=0"
+        self.url = f"rtsp://{username}:{password}@{ip}:554/cam/realmonitor?channel={channel}&subtype=0"
         self.cap = None
     
-    def connect(self):
+    def connect(self) -> bool:
         self.cap = cv2.VideoCapture(self.url)
         if not self.cap.isOpened():
             print("No se pudo abrir la camara")
             return False
         return True
     
-    def is_connected(self):
+    def is_connected(self) -> bool:
         return (self.cap is not None and self.cap.isOpened())
     
     def read_frame(self):
@@ -49,13 +49,13 @@ class GenericCamera:
         return None
 
     @staticmethod
-    def from_json(json_config):
+    def from_json(self,json_config):
         name = json_config['name']
         ip = json_config['ip']
         username = json_config['username']
         password = json_config['password']
         channel = json_config['channel']
-        return GenericCamera(name, ip, username, password, channel)
+        return self(name, ip, username, password, channel)
     
     @staticmethod
     def list_from_json(json_config):
@@ -67,8 +67,6 @@ class GenericCamera:
     
 
 class CameraManager:
-    counter = 0
-    show_every = 2
     actual_camera: GenericCamera
     camera_list: list[GenericCamera]
 

@@ -20,13 +20,14 @@ except:
 
 class Application:
     is_person_detected = False
-    show_information = True
+    show_information = False
     has_to_show_camera = False
     stored_events = []
 
     def __init__(self):
-        localPathImages = f"{os.path.dirname(os.path.realpath(__file__))}/"
+        
         #Creating Configuration object
+        localPathImages = f"{os.path.dirname(os.path.realpath(__file__))}/"
         config_data = ConfigurationReader.read_config_file(localPathImages)
         
         #Creating Mqtt objects
@@ -49,10 +50,7 @@ class Application:
         self.celestial_body_viewer = CelestialBodyViewer()
 
         #Creating ButtonController
-        if(is_raspberry_pi):
-            transistor_pin = 14
-            button_pins = [15, 24]
-            self.button_controller = ButtonController(transistor_pin, button_pins)
+        self.create_button_controller()
 
         #Getting UI Values
         calendar_icon = self.icon_manager.get_icon_from_code("Calendar",default_icon_size = 26)
@@ -66,10 +64,7 @@ class Application:
 
         #Updating UI values first time
         #self.update_weather()
-        self.update_moon()
-        self.update_sun()
-        self.camera_manager.next_index=2
-        self.set_new_camera_to_show()
+        self.update_celestial_bodies()
         self.update_screen_showing_frames()
 
     def connectMqtt(self,config_data):
@@ -81,6 +76,13 @@ class Application:
             self.mqttConnected = True
         except:
             self.mqttConnected = False
+
+    def create_button_controller(self):
+        if(is_raspberry_pi):
+            transistor_pin = 14
+            button_pins = [15, 24]
+            self.button_controller = ButtonController(transistor_pin, button_pins)
+
 
     def get_screen_dimensions(self):
         self.screen_width = self.ui_controller.fullscreenWindow.tk.winfo_screenwidth()
