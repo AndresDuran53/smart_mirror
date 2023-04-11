@@ -18,19 +18,20 @@ class GenericCamera:
             return False
         return True
     
+    def is_connected(self):
+        return (self.cap is not None and self.cap.isOpened())
+    
     def read_frame(self):
-        if (self.cap is None):
-            self.connect()
-        if (self.cap is not None):
+        if (not self.is_connected()): self.connect()
+        if (self.is_connected()):
             ret, frame = self.cap.read()
             if ret: return frame
         return None
 
     def release_camera(self):
-        print("Releasing camera:",self.name)
-        if(self.cap is not None):
-            self.cap.release()
-            self.cap = None
+        print("Releasing camera:", self.name)
+        if (self.is_connected()): self.cap.release()
+        self.cap = None
 
     def get_photo(self):
         frame_image = self.read_frame()
@@ -88,8 +89,7 @@ class CameraManager:
     def next_connection(self):
         last_camera = self.actual_camera
         self.actual_camera = self.get_next_camera()
-        if(last_camera is not None):
-            last_camera.release_camera()
+        if(last_camera is not None): last_camera.release_camera()
 
     def get_photo(self):
         photo = self.actual_camera.get_photo()
