@@ -15,7 +15,7 @@ class VideoCapture:
         self.cap = cv2.VideoCapture(self.source)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-        time.sleep(5)
+        time.sleep(2)
 
     def delete(self):
         self.cap.release()
@@ -31,7 +31,7 @@ class VideoCapture:
             return None
 
 class FaceDetector:
-    def __init__(self, xml_file_path, scale_factor=1.1, min_neighbors=6, min_size=(40, 40), flags=cv2.CASCADE_SCALE_IMAGE, percent_to_detect=0.25, min_constant_face_counter=7):
+    def __init__(self, xml_file_path, scale_factor=1.1, min_neighbors=6, min_size=(40, 40), flags=cv2.CASCADE_SCALE_IMAGE, percent_to_detect=0.25, min_constant_face_counter=3):
 
         localPathImages = f"{os.path.dirname(os.path.realpath(__file__))}/"
 
@@ -72,8 +72,8 @@ class FaceDetectorApp:
         self.video_capture = VideoCapture(source, width, height)
         self.face_detector = FaceDetector('haarcascade_frontalface_default.xml')
         self.cpu_delay_counter = 0
-        self.no_face_counter = 100
-        self.face_counter_delay = 35
+        self.no_face_counter = 10
+        self.face_counter_delay = 8
         self.is_new_person_detected = False
 
     def run(self):

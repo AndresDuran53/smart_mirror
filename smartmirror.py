@@ -1,4 +1,5 @@
 import os
+import gc
 from libs.iterated_thread import IteratedThreadWithDelay
 from libs.ui_views.ui_controller import UIController
 from libs.events_manager import EventHandler
@@ -64,7 +65,10 @@ class Application:
 
         #Updating UI values first time
         #self.update_weather()
-        self.update_celestial_bodies()
+        self.update_general_information()
+        #self.show_information = True
+        #self.camera_manager.next_index = 2
+        #self.set_new_camera_to_show()
         self.update_screen_showing_frames()
 
     def connectMqtt(self,config_data):
@@ -123,17 +127,14 @@ class Application:
         icon_image = self.icon_manager.get_icon_from_code("Sunrise")
         self.ui_controller.update_sun(icon_image,text,date)
 
-    def update_celestial_bodies(self):
-        self.update_moon()
-        self.update_sun()
-            
     def show_next_picture_slide(self):
-        if(self.show_information): return
+        if(self.show_information or self.has_to_show_camera): return
         try:
             width = self.screen_width*0.9
             height = self.screen_height*0.8
             new_image = self.image_manager.get_next_image(width, height)
             self.ui_controller.update_picture_slide(new_image)
+            gc.collect()
         except Exception as e:
             log("Error: Cannot update picture slide. " + str(e))
 
@@ -143,8 +144,15 @@ class Application:
                 photo = self.camera_manager.get_photo()
                 if(photo is not None):
                     self.ui_controller.update_videocamera_photo(photo)
+                    gc.collect()
             except Exception as e:
                 log("Unable to update videoframe: " + str(e))
+
+    def update_general_information(self):
+        self.update_events()
+        self.show_next_picture_slide()
+        self.update_moon()
+        self.update_sun()
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
@@ -222,26 +230,20 @@ class Application:
 if __name__ == '__main__':
     app = Application()
 
-    thread_events_update = IteratedThreadWithDelay(app.update_events,120)
+    thread_events_update = IteratedThreadWithDelay(app.update_general_information,300)
     thread_events_update.start()
 
     #thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
     #thread_weather_update.start()
 
-    thread_next_picture = IteratedThreadWithDelay(app.show_next_picture_slide,300)
-    thread_next_picture.start()
-
-    thread_celestial_body_update = IteratedThreadWithDelay(app.update_celestial_bodies,600)
-    thread_celestial_body_update.start()
-
-    thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.1)
+    thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.3)
     thread_face_recognition.start()
 
     if(is_raspberry_pi):
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.1)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()
