@@ -64,7 +64,10 @@ class Application:
 
         #Updating UI values first time
         #self.update_weather()
-        self.update_celestial_bodies()
+        self.update_general_information()
+        #self.show_information = True
+        #self.camera_manager.next_index = 2
+        #self.set_new_camera_to_show()
         self.update_screen_showing_frames()
 
     def connectMqtt(self,config_data):
@@ -123,10 +126,6 @@ class Application:
         icon_image = self.icon_manager.get_icon_from_code("Sunrise")
         self.ui_controller.update_sun(icon_image,text,date)
 
-    def update_celestial_bodies(self):
-        self.update_moon()
-        self.update_sun()
-            
     def show_next_picture_slide(self):
         if(self.show_information): return
         try:
@@ -145,6 +144,12 @@ class Application:
                     self.ui_controller.update_videocamera_photo(photo)
             except Exception as e:
                 log("Unable to update videoframe: " + str(e))
+
+    def update_general_information(self):
+        self.update_events()
+        self.show_next_picture_slide()
+        self.update_moon()
+        self.update_sun()
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
@@ -222,17 +227,11 @@ class Application:
 if __name__ == '__main__':
     app = Application()
 
-    thread_events_update = IteratedThreadWithDelay(app.update_events,120)
+    thread_events_update = IteratedThreadWithDelay(app.update_general_information,300)
     thread_events_update.start()
 
     #thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
     #thread_weather_update.start()
-
-    thread_next_picture = IteratedThreadWithDelay(app.show_next_picture_slide,300)
-    thread_next_picture.start()
-
-    thread_celestial_body_update = IteratedThreadWithDelay(app.update_celestial_bodies,600)
-    thread_celestial_body_update.start()
 
     thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.1)
     thread_face_recognition.start()
