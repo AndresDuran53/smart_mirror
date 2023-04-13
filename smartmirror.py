@@ -233,7 +233,7 @@ if __name__ == '__main__':
     #thread_weather_update = IteratedThreadWithDelay(app.update_weather,3600)
     #thread_weather_update.start()
 
-    thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.1)
+    thread_face_recognition = IteratedThreadWithDelay(app.execute_face_recognition,0.3)
     thread_face_recognition.start()
 
     if(is_raspberry_pi):
