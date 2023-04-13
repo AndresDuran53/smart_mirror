@@ -1,4 +1,5 @@
 import os
+import gc
 from libs.iterated_thread import IteratedThreadWithDelay
 from libs.ui_views.ui_controller import UIController
 from libs.events_manager import EventHandler
@@ -127,12 +128,13 @@ class Application:
         self.ui_controller.update_sun(icon_image,text,date)
 
     def show_next_picture_slide(self):
-        if(self.show_information): return
+        if(self.show_information or self.has_to_show_camera): return
         try:
             width = self.screen_width*0.9
             height = self.screen_height*0.8
             new_image = self.image_manager.get_next_image(width, height)
             self.ui_controller.update_picture_slide(new_image)
+            gc.collect()
         except Exception as e:
             log("Error: Cannot update picture slide. " + str(e))
 
@@ -142,6 +144,7 @@ class Application:
                 photo = self.camera_manager.get_photo()
                 if(photo is not None):
                     self.ui_controller.update_videocamera_photo(photo)
+                    gc.collect()
             except Exception as e:
                 log("Unable to update videoframe: " + str(e))
 
@@ -240,7 +243,7 @@ if __name__ == '__main__':
         thread_button_reader = IteratedThreadWithDelay(app.read_buttons,0.1)
         thread_button_reader.start()
 
-    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0)
+    thread_videocamera_view = IteratedThreadWithDelay(app.update_videoframe,0.1)
     thread_videocamera_view.start()
 
     app.run_ui_mainloop()
