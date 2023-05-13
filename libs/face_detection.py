@@ -1,6 +1,7 @@
 import cv2
 import psutil
 import time
+from datetime import datetime
 import os
 from .smartmirror_utils import log
 
@@ -83,7 +84,10 @@ class FaceDetectorApp:
                 self.is_new_person_detected = False
                 return
             faces = self.face_detector.detect_faces(frame)
+            person_detected_old = self.is_new_person_detected
             self.is_new_person_detected = self.is_person_detected(faces)
+            if(self.is_new_person_detected and person_detected_old != self.is_new_person_detected):
+                self.save_face_image(frame,faces)
             #self.monitor_cpu()
             if cv2.waitKey(1) & 0xFF == ord('q'): return
             cv2.setWindowProperty('Video', cv2.WND_PROP_VSYNC, 0)
@@ -104,6 +108,19 @@ class FaceDetectorApp:
         cpu_usage = psutil.cpu_percent()
         print(f"Uso de CPU: {cpu_usage}%")
         self.cpu_delay_counter = 0
+
+    def draw_faces(self,frame,faces):
+        for (x, y, w, h, color) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
+        return frame
+
+    def save_face_image(self,frame,faces):
+        frame = self.draw_faces(frame,faces)
+        localPathImages = f"{os.path.dirname(os.path.realpath(__file__))}/"
+        now = datetime.now()
+        dt_string = now.strftime("%Y-%m-%d-%H-%M-%S")
+        file_name = f"{localPathImages}face-{dt_string}.jpg"
+        cv2.imwrite(file_name, frame)
 
 if __name__ == '__main__':
     app = FaceDetectorApp()
