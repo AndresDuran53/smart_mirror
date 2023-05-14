@@ -52,12 +52,19 @@ class FaceDetector:
         if(self.faces_count_verification(close_detected_faces)):
             return close_detected_faces
         else: return []
+
+    def get_minimun_face_margin(self,camera_size,face_size):
+        extra_size = camera_size - face_size
+        margin_size = extra_size/4
+        return margin_size
     
     def get_close_detected_faces(self,faces,frame):
         close_detected_faces = []
         for (x, y, w, h) in faces:
             if ((w > frame.shape[1]*self.percent_to_detect) or (h > frame.shape[0]*self.percent_to_detect)):
-                close_detected_faces.append((x, y, w, h,(0, 255, 0)))
+                width_minimun_margin = self.get_minimun_face_margin(frame.shape[1],w)
+                if(x >= width_minimun_margin and (x+w <= frame.shape[1]-width_minimun_margin)):
+                    close_detected_faces.append((x, y, w, h,(0, 255, 0)))
         return close_detected_faces
     
     def faces_count_verification(self,close_detected_faces):
