@@ -55,10 +55,12 @@ class Application:
 
         #Getting UI Values
         calendar_icon = self.icon_manager.get_icon_from_code("Calendar",default_icon_size = 26)
+        wifi_code_icon = self.icon_manager.get_icon_from_code("WifiCodeIcon",default_icon_size = 200)
 
         #Setting UI values
         self.get_screen_dimensions()
         self.ui_controller.set_calendar_icon(calendar_icon)
+        self.ui_controller.set_wifi_code_icon(wifi_code_icon)
 
         #Creating UI frames
         self.ui_controller.create_frames()

@@ -28,7 +28,8 @@ class Icons():
         'Moon4':"moon/4.png",
         'Moon5':"moon/5.png",
         'Moon6':"moon/6.png",
-        'Moon7':"moon/7.png"
+        'Moon7':"moon/7.png",
+        'WifiCodeIcon': "wifi_password.png",  # hail
     }
     codes_dict = {
         "01d": "Sun",
@@ -50,7 +51,7 @@ class Icons():
         "50d": "Haze",
         "50n": "Haze",
         "Sunrise":'Sunrise',
-        "Calendar": "Calendar",
+        "WifiCodeIcon": "WifiCodeIcon",
         'Luna Nueva':"Moon0",
         'Lúnula Creciente':"Moon1",
         'Cuarto Creciente':"Moon2",

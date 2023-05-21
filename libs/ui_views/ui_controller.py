@@ -7,6 +7,9 @@ class UIController():
     def set_calendar_icon(self,calendar_icon):
         self.fullscreenWindow.calendar_icon=calendar_icon
 
+    def set_wifi_code_icon(self,wifi_code_icon):
+        self.fullscreenWindow.wifi_code_icon=wifi_code_icon
+
     def create_frames(self):
         self.fullscreenWindow.create_all_frames()
     

@@ -1,6 +1,7 @@
 from tkinter import *
 from .picture_frame import PictureFrame
 from .celestial_frame import MoonFrame,SunsetFrame
+from .wifi_code_frame import WifiCodeFrame
 from .calendar_frame import Calendar
 from .clock_frame import Clock
 from .weather_frame import Weather
@@ -46,6 +47,14 @@ class FullscreenWindow:
                                 fontStyle_parent = self.fontStyle)
         self.sunset_frame.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
         self.sunset_frame.pack_forget()
+
+    def create_wifi_code(self):
+        self.wifi_code = WifiCodeFrame(self.midFrame, self.wifi_code_icon,
+                                background_parent = self.background, 
+                                fontColor_parent = self.fontColor, 
+                                fontStyle_parent = self.fontStyle)
+        self.wifi_code.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
+        self.wifi_code.pack_forget()
         
     def create_clock_frame(self):
         self.clock = Clock(self.topFrame, 
@@ -83,6 +92,7 @@ class FullscreenWindow:
         self.create_weather_frame()
         self.create_moon_frame()
         self.create_sunset_frame()
+        self.create_wifi_code()
         self.create_picture_frame()
         self.create_videocamera_frame()
         self.create_calender_frame()
@@ -133,12 +143,15 @@ class FullscreenWindow:
     def remove_extra_information(self):
         self.moon_frame.pack_forget()
         self.sunset_frame.pack_forget()
+        self.wifi_code.pack_forget()
 
     def show_extra_information(self):
         if(not self.moon_frame.winfo_ismapped()):
             self.moon_frame.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
         if(not self.sunset_frame.winfo_ismapped()):
             self.sunset_frame.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
+        self.wifi_code.pack(side=TOP, anchor=E, padx=self.padding_x, pady=5)
+        
 
     def update_videocamera_photo(self,photo):
         self.videocamera_frame.update_photo(photo)
