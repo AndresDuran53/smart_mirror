@@ -40,7 +40,7 @@ class Application:
         #Creating UI object
         self.ui_controller = UIController()
         #Creating Face Recognition
-        self.face_recognition = FaceDetectorApp()
+        self.face_recognition = FaceDetectorApp("http://192.168.0.4:8581/")
         #Creating Service objects
         self.openweathermap_manager = OpenWeatherMap.from_json(config_data)
         self.event_handler = EventHandler(config_data)
