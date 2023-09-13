@@ -44,7 +44,7 @@ class FanController:
 cpu_fan_pin = 18
 case_fan_pin = 23
 max_temperature = 70
-mid_temperature = 65
+mid_temperature = 60
 marginTMP = 10
 fan_controller = FanController(cpu_fan_pin, case_fan_pin, max_temperature, mid_temperature, marginTMP)
 

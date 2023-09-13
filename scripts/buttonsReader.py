@@ -76,7 +76,7 @@ class ButtonController:
 
 if __name__ == '__main__':
     transistor_pin = 14
-    button_pins = [15, 24]
+    button_pins = [15, 24, 25]
     button_controller = ButtonController(transistor_pin, button_pins)
     while(1):
         button_controller.execute_if_pressed()

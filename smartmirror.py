@@ -86,7 +86,7 @@ class Application:
     def create_button_controller(self):
         if(is_raspberry_pi):
             transistor_pin = 14
-            button_pins = [15, 24]
+            button_pins = [15, 24, 25]
             self.button_controller = ButtonController(transistor_pin, button_pins)
 
 
