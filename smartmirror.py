@@ -155,6 +155,7 @@ class Application:
         self.show_next_picture_slide()
         self.update_moon()
         self.update_sun()
+        self.send_temp_update()
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
@@ -172,6 +173,15 @@ class Application:
             self.ui_controller.remove_extra_information()
             self.ui_controller.show_picture_slide()
             self.ui_controller.remove_videocamera_photo()
+
+    def send_temp_update(self):
+        if(is_raspberry_pi):
+            try:
+                res = os.popen('vcgencmd measure_temp').readline()
+                temp = str(float(res.replace("temp=","").replace("'C\n","")))
+                self.communicate_value("smartmirror/state/temperature",temp)
+            except:
+                pass
                       
     def execute_face_recognition(self):
         try:
@@ -200,6 +210,9 @@ class Application:
         elif(value == 2):
             self.disconnect_showing_camera()
             self.update_screen_showing_frames()
+        elif(value == 3):
+            self.communicate_value("smartmirror/request/lights","change")
+        self.communicate_value("smartmirror/button/pressed",str(value))
 
     def set_new_camera_to_show(self):
         self.camera_manager.next_connection()
