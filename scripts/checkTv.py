@@ -1,7 +1,19 @@
 import os
 import time
+import subprocess
 import RPi.GPIO as GPIO
 
+def check_resolution():
+    try:
+        # Execute the tvservice -s command
+        result = subprocess.check_output(["tvservice", "-s"], stderr=subprocess.STDOUT, text=True)
+
+        # Check if the output contains "1920x1080"
+        if not "1920x1080" in result:
+            print("The resolution is not 1920x1080. Restarting the system...")
+            subprocess.call(["sudo","reboot"])
+    except subprocess.CalledProcessError as e:
+        print("Error executing tvservice:", e.output)
 
 class TVController:
     def __init__(self, button_pin, red_led_pin, green_led_pin, relay_pin, sound_file):
@@ -57,6 +69,8 @@ class TVController:
                 if green_led_state:
                     time.sleep(15)
                     self.reproduce_sound()
+                    time.sleep(15)
+                    check_resolution()
             else:
                 print("Está desconectada")
                 self.try_to_power_TV()
@@ -65,7 +79,7 @@ button_pin = 27
 red_led_pin = 17
 green_led_pin = 4
 relay_pin = 10
-tv_controller = TVController(button_pin, red_led_pin, green_led_pin, relay_pin, "/home/pi/Sounds/starting/opening2.wav")
+tv_controller = TVController(button_pin, red_led_pin, green_led_pin, relay_pin, "/home/pi/smart_mirror/Sounds/starting/opening2.wav")
 while(1):
     tv_controller.check_tv_state()
     time.sleep(5)
