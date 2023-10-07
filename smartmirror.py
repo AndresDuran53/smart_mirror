@@ -21,7 +21,7 @@ except:
 
 class Application:
     is_person_detected = False
-    show_information = False
+    has_show_information = False
     has_to_show_camera = False
     stored_events = []
 
@@ -56,11 +56,13 @@ class Application:
         #Getting UI Values
         calendar_icon = self.icon_manager.get_icon_from_code("Calendar",default_icon_size = 26)
         wifi_code_icon = self.icon_manager.get_icon_from_code("WifiCodeIcon",default_icon_size = 200)
+        halloween_icon = self.icon_manager.get_icon_from_code("Halloween",default_icon_size = 125)
 
         #Setting UI values
         self.get_screen_dimensions()
         self.ui_controller.set_calendar_icon(calendar_icon)
         self.ui_controller.set_wifi_code_icon(wifi_code_icon)
+        self.ui_controller.set_halloween_icon(halloween_icon)
 
         #Creating UI frames
         self.ui_controller.create_frames()
@@ -68,17 +70,16 @@ class Application:
         #Updating UI values first time
         #self.update_weather()
         self.update_general_information()
-        #self.show_information = True
+        #self.has_show_information = True
         #self.camera_manager.next_index = 2
         #self.set_new_camera_to_show()
         self.update_screen_showing_frames()
 
     def connectMqtt(self,config_data):
         try:
-            topics_sub = ["smartmirror/play/sound","smartmirror/open/","smartmirror/event/add"]
-            self.topic_state_pub = "smartmirror/camera/person/detected"
             mqtt_config = MqttConfig.from_json(config_data)
-            self.mqtt_controller = MqttController(mqtt_config,self.on_message,"SmartMirror",topics_sub)
+            self.mqtt_controller = MqttController(mqtt_config,self.on_message,"SmartMirror")
+            self.topic_state_pub = mqtt_config.person_detected_topic
             self.mqttConnected = True
         except:
             self.mqttConnected = False
@@ -130,7 +131,7 @@ class Application:
         self.ui_controller.update_sun(icon_image,text,date)
 
     def show_next_picture_slide(self):
-        if(self.show_information or self.has_to_show_camera): return
+        if(self.has_show_information or self.has_to_show_camera): return
         try:
             width = self.screen_width*0.9
             height = self.screen_height*0.8
@@ -159,20 +160,12 @@ class Application:
 
     def update_screen_showing_frames(self):
         if(self.has_to_show_camera):
-            self.ui_controller.remove_slide_picture()
-            self.ui_controller.remove_events()
-            self.ui_controller.remove_extra_information()
-            self.ui_controller.show_videocamera_photo()
-        elif(self.show_information):
-            self.ui_controller.remove_slide_picture()
-            self.ui_controller.show_extra_information()
+            self.ui_controller.show_camera()
+        elif(self.has_show_information):
             self.ui_controller.update_events(self.stored_events) 
-            self.ui_controller.remove_videocamera_photo()
+            self.ui_controller.show_information()
         else:
-            self.ui_controller.remove_events()
-            self.ui_controller.remove_extra_information()
-            self.ui_controller.show_picture_slide()
-            self.ui_controller.remove_videocamera_photo()
+            self.ui_controller.show_pictures()
 
     def send_temp_update(self):
         if(is_raspberry_pi):
@@ -190,8 +183,8 @@ class Application:
             if(self.is_person_detected != new_person_detected):
                 log("Face Recognition Is Different")
                 self.is_person_detected = new_person_detected
-                self.show_information = self.is_person_detected
-                if(self.show_information):
+                self.has_show_information = self.is_person_detected
+                if(self.has_show_information):
                     self.communicate_value(self.topic_state_pub,"1")
                     pass
                 else:

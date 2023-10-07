@@ -5,6 +5,7 @@ from .wifi_code_frame import WifiCodeFrame
 from .calendar_frame import Calendar
 from .clock_frame import Clock
 from .weather_frame import Weather
+from .halloween_counter_frame import HalloweenCounter
 from .videocamera_frame import VideoFrame
 
 class FullscreenWindow:
@@ -31,6 +32,7 @@ class FullscreenWindow:
                                 fontColor_parent = self.fontColor, 
                                 fontStyle_parent = self.fontStyle)
         self.weather.pack(side=RIGHT, padx=self.padding_x, pady=self.padding_y)
+        self.weather.pack_forget()
 
     def create_moon_frame(self):
         self.moon_frame = MoonFrame(self.midFrame, 
@@ -87,6 +89,13 @@ class FullscreenWindow:
         self.calender.pack(side=LEFT, anchor=SW, padx=self.padding_x, pady=self.padding_y)
         self.calender.pack_forget()
 
+    def create_halloween_counter_frame(self):
+        self.halloween_counter = HalloweenCounter(self.topFrame, self.halloween_icon,
+                                background_parent = self.background, 
+                                fontColor_parent = self.fontColor, 
+                                fontStyle_parent = self.fontStyle)
+        self.halloween_counter.pack(side=RIGHT, padx=self.padding_x, pady=self.padding_y)
+
     def create_all_frames(self):
         self.create_clock_frame()
         self.create_weather_frame()
@@ -96,6 +105,7 @@ class FullscreenWindow:
         self.create_picture_frame()
         self.create_videocamera_frame()
         self.create_calender_frame()
+        self.create_halloween_counter_frame()
 
     def update_weather(self,icon_image,new_forecast,new_temperature):
         self.weather.set_icon(icon_image)

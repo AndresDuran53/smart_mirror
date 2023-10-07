@@ -20,7 +20,7 @@ class Icons():
         'Storm': "Storm.png",  # thunderstorm
         'Tornado': "Tornado.png",    # tornado
         'Hail': "Hail.png",  # hail
-        'Calendar': "calendar.png",  # hail
+        'Calendar': "calendar.png",
         'Moon0':"moon/0.png",
         'Moon1':"moon/1.png",
         'Moon2':"moon/2.png",
@@ -29,7 +29,8 @@ class Icons():
         'Moon5':"moon/5.png",
         'Moon6':"moon/6.png",
         'Moon7':"moon/7.png",
-        'WifiCodeIcon': "wifi_password.png",  # hail
+        'WifiCodeIcon': "wifi_password.png",
+        "Halloween": "Halloween.png"
     }
     codes_dict = {
         "01d": "Sun",
@@ -52,6 +53,7 @@ class Icons():
         "50n": "Haze",
         "Sunrise":'Sunrise',
         "WifiCodeIcon": "WifiCodeIcon",
+        "Halloween": "Halloween",
         'Luna Nueva':"Moon0",
         'Lúnula Creciente':"Moon1",
         'Cuarto Creciente':"Moon2",

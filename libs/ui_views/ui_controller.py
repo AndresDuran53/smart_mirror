@@ -10,6 +10,9 @@ class UIController():
     def set_wifi_code_icon(self,wifi_code_icon):
         self.fullscreenWindow.wifi_code_icon=wifi_code_icon
 
+    def set_halloween_icon(self,halloween_icon):
+        self.fullscreenWindow.halloween_icon=halloween_icon
+
     def create_frames(self):
         self.fullscreenWindow.create_all_frames()
     
@@ -57,3 +60,20 @@ class UIController():
 
     def remove_videocamera_photo(self):
         self.fullscreenWindow.remove_videocamera_frame()
+
+    def show_pictures(self):
+        self.remove_events()
+        self.remove_extra_information()
+        self.show_picture_slide()
+        self.remove_videocamera_photo()
+
+    def show_camera(self):
+        self.remove_slide_picture()
+        self.remove_events()
+        self.remove_extra_information()
+        self.show_videocamera_photo()
+
+    def show_information(self):
+        self.remove_slide_picture()
+        self.show_extra_information()
+        self.remove_videocamera_photo()
