@@ -11,6 +11,7 @@ from libs.smartmirror_utils import log
 from libs.face_detection import FaceDetectorApp
 from libs.celestial_body_viewer import CelestialBodyViewer
 from libs.generic_camera import CameraManager
+from libs.ui_views.countdown.holiday import Holiday
 
 try:
     from scripts.buttonsReader import ButtonController
@@ -62,7 +63,7 @@ class Application:
         self.get_screen_dimensions()
         self.ui_controller.set_calendar_icon(calendar_icon)
         self.ui_controller.set_wifi_code_icon(wifi_code_icon)
-        self.ui_controller.set_halloween_icon(halloween_icon)
+        self.ui_controller.set_next_holiday(Holiday("Halloween","31-10",halloween_icon))
 
         #Creating UI frames
         self.ui_controller.create_frames()

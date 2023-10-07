@@ -10,8 +10,8 @@ class UIController():
     def set_wifi_code_icon(self,wifi_code_icon):
         self.fullscreenWindow.wifi_code_icon=wifi_code_icon
 
-    def set_halloween_icon(self,halloween_icon):
-        self.fullscreenWindow.halloween_icon=halloween_icon
+    def set_next_holiday(self,holiday):
+        self.fullscreenWindow.holiday=holiday
 
     def create_frames(self):
         self.fullscreenWindow.create_all_frames()

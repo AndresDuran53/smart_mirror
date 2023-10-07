@@ -1,14 +1,16 @@
 from tkinter import *
-from .custom_frame import CustomFrame,small_text_size,large_text_size
+from ..custom_frame import CustomFrame,small_text_size,large_text_size
+from .holiday import Holiday
 import time
 
-class HalloweenCounter(Frame):
-    days = ''
-    default_text = "Days Until Halloween"
+class GeneralCountdown(Frame):
+    days_remaining = ''
+    label_text = "Days remaining"
     icon = ''
 
-    def __init__(self, parent, halloween_icon, **kwargs):
+    def __init__(self, parent, holiday: Holiday, **kwargs):
         CustomFrame.__init__(self, parent, kwargs)
+        self.holiday = holiday
         #Create Degree frame
         self.parentFrm = Frame(self, bg=self.background)
         self.parentFrm.pack(side=TOP, anchor=W)
@@ -22,12 +24,20 @@ class HalloweenCounter(Frame):
         self.iconLbl.pack(side=LEFT, anchor=W, padx=20)
 
         #Create Text frame
-        self.text_label = Label(self, text=self.default_text, font=(self.fontStyle, small_text_size), fg=self.fontColor, bg=self.background)
+        self.text_label = Label(self, font=(self.fontStyle, small_text_size), fg=self.fontColor, bg=self.background)
         self.text_label.pack(side=LEFT, anchor=S)
-        self.set_icon(halloween_icon)
+        self.set_label_text(holiday)
+        self.set_icon(holiday)
         self.update_countdown()
 
-    def set_icon(self,icon_image):
+    def set_label_text(self, holiday: Holiday):
+        if (holiday.name):
+            self.label_text = f"Days Until {holiday.name}"
+        self.text_label.config(text=self.label_text)
+        return
+
+    def set_icon(self, holiday:Holiday):
+        icon_image = holiday.icon
         self.iconLbl.config(image=icon_image)
         self.iconLbl.image = icon_image
 
@@ -35,13 +45,16 @@ class HalloweenCounter(Frame):
         current_time = time.time()
         current_year = time.localtime(current_time).tm_year
 
+        holiday_day = self.holiday.date.split("-")[0]
+        holiday_month = self.holiday.date.split("-")[1]
+
         # Calculate Halloween date for the current year
-        halloween_date = time.mktime(time.strptime(f"31-10-{current_year} 00:00:00", "%d-%m-%Y %H:%M:%S"))
+        halloween_date = time.mktime(time.strptime(f"{holiday_day}-{holiday_month}-{current_year} 00:00:00", "%d-%m-%Y %H:%M:%S"))
 
         if current_time > halloween_date:
             # If current time is past Halloween for this year, calculate for next year
             current_year += 1
-            halloween_date = time.mktime(time.strptime(f"31-10-{current_year} 00:00:00", "%d-%m-%Y %H:%M:%S"))
+            halloween_date = time.mktime(time.strptime(f"{holiday_day}-{holiday_month}-{current_year} 00:00:00", "%d-%m-%Y %H:%M:%S"))
 
         time_difference = max(halloween_date - current_time, 0)
 

@@ -5,7 +5,7 @@ from .wifi_code_frame import WifiCodeFrame
 from .calendar_frame import Calendar
 from .clock_frame import Clock
 from .weather_frame import Weather
-from .halloween_counter_frame import HalloweenCounter
+from .countdown.general_countdown_frame import GeneralCountdown
 from .videocamera_frame import VideoFrame
 
 class FullscreenWindow:
@@ -90,7 +90,7 @@ class FullscreenWindow:
         self.calender.pack_forget()
 
     def create_halloween_counter_frame(self):
-        self.halloween_counter = HalloweenCounter(self.topFrame, self.halloween_icon,
+        self.halloween_counter = GeneralCountdown(self.topFrame, self.holiday,
                                 background_parent = self.background, 
                                 fontColor_parent = self.fontColor, 
                                 fontStyle_parent = self.fontStyle)
