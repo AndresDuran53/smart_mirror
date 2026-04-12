@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Smart Mirror
+Exec=/home/sneer/smart_mirror/services/start_smartmirror.sh
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Comment=Start the Smart Mirror application on login

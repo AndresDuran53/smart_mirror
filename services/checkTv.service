@@ -2,12 +2,12 @@
 Description=Check the state of the Screen to ensure that is turned on
 
 [Service]
-ExecStart=/usr/bin/python3 -u /home/pi/smart_mirror/scripts/checkTv.py
-WorkingDirectory=/home/pi/smart_mirror
+ExecStart=/home/sneer/smart_mirror/.venv/bin/python3 -u /home/sneer/smart_mirror/scripts/checkTv.py
+WorkingDirectory=/home/sneer/smart_mirror
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=pi
+User=sneer
 
 [Install]
 WantedBy=multi-user.target

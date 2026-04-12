@@ -52,20 +52,61 @@ Fill in:
 
 ### 5. Run
 
+> **Important:** This is a GUI app (tkinter). It **must** run from a desktop session with a display.
+> It will NOT work over SSH unless you forward the display (see below).
+
+#### Option A: Run directly on the Pi's desktop
+
+Open a terminal on the Pi (physically or via VNC) and run:
+
 ```bash
+cd ~/smart_mirror
 source .venv/bin/activate
 python3 smartmirror.py
 ```
 
-### Run as a service (optional)
-
-To auto-start on boot, see the service files in `services/`:
+#### Option B: Run over SSH (testing only)
 
 ```bash
-# Edit the service file paths as needed, then:
+# From the Pi's SSH session, set DISPLAY to the local screen:
+export DISPLAY=:0
+cd ~/smart_mirror
+source .venv/bin/activate
+python3 smartmirror.py
+```
+
+### 6. Auto-start on boot (recommended)
+
+The mirror should start automatically when the Pi boots into the desktop.
+
+#### Enable auto-login to desktop
+
+```bash
+sudo raspi-config
+# Navigate to: System Options → Boot / Auto Login → Desktop Autologin
+```
+
+#### Install autostart entry
+
+```bash
+mkdir -p ~/.config/autostart
+cp services/smartmirror.desktop ~/.config/autostart/
+# Edit the Exec path in the .desktop file if your install path differs from ~/smart_mirror
+```
+
+The mirror will launch fullscreen after the desktop loads on every reboot.
+
+### Helper services (optional)
+
+These systemd services run background scripts for TV control and temperature monitoring:
+
+```bash
+# Edit the paths in the .service files to match your install location and username
 sudo cp services/checkTv.service /etc/systemd/system/
-sudo systemctl enable checkTv.service
-sudo systemctl start checkTv.service
+sudo cp services/tempChecker.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable checkTv.service tempChecker.service
+sudo systemctl start checkTv.service tempChecker.service
 ```
 
 ### Python dependencies
