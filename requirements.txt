@@ -3,3 +3,6 @@ paho-mqtt
 pytz
 ephem
 psutil
+Pillow
+opencv-python-headless
+RPi.GPIO
