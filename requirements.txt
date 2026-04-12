@@ -5,4 +5,4 @@ ephem
 psutil
 Pillow
 opencv-python-headless
-RPi.GPIO
+# RPi.GPIO  # Optional: only needed on Raspberry Pi. Install manually: pip install RPi.GPIO

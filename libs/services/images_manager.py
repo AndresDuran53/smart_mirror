@@ -80,7 +80,7 @@ class Icons():
     def get_icon_from_code(self,id, default_icon_size = 50):
         icon_path = self.get_icon_path_by_code(id)
         image = Image.open(icon_path)
-        image = image.resize((default_icon_size, default_icon_size), Image.ANTIALIAS)
+        image = image.resize((default_icon_size, default_icon_size), Image.LANCZOS)
         image = image.convert('RGB')
         icon = ImageTk.PhotoImage(image)
         return icon
