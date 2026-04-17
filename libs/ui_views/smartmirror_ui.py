@@ -17,7 +17,7 @@ class FullscreenWindow:
 
     def __init__(self):
         self.tk = Tk()
-        self.tk.configure(background=self.background)
+        self.tk.configure(background=self.background, cursor="none")
         self.w = self.tk.winfo_screenwidth()
         self.h = self.tk.winfo_screenheight()
         self.topFrame = Frame(self.tk, background = self.background)

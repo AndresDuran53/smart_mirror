@@ -23,7 +23,7 @@ except:
 class Application:
     is_person_detected = False
     has_show_information = False
-    has_to_show_camera = False
+    has_to_show_camera = True
     stored_events = []
 
     def __init__(self):
@@ -41,7 +41,8 @@ class Application:
         #Creating UI object
         self.ui_controller = UIController()
         #Creating Face Recognition
-        self.face_recognition = FaceDetectorApp("http://192.168.0.4:8581/")
+        #self.face_recognition = FaceDetectorApp("rtsp://localhost:8554/live")
+        self.face_recognition = FaceDetectorApp()
         #Creating Service objects
         self.openweathermap_manager = OpenWeatherMap.from_json(config_data)
         self.event_handler = EventHandler(config_data)
@@ -145,9 +146,10 @@ class Application:
     def update_videoframe(self):
         if(self.has_to_show_camera):
             try:
-                photo = self.camera_manager.get_photo()
-                if(photo is not None):
-                    self.ui_controller.update_videocamera_photo(photo)
+                # Get frame directly from face detection (with rectangles drawn)
+                frame = self.face_recognition.get_processed_frame()
+                if(frame is not None):
+                    self.ui_controller.update_videocamera_photo(frame)
                     gc.collect()
             except Exception as e:
                 log("Unable to update videoframe: " + str(e))

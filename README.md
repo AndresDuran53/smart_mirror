@@ -13,12 +13,13 @@ A custom version of a Smart Mirror
 - Python 3.9+
 - Conexión a internet
 
+
 ### 1. Install system dependencies
 
 ```bash
-# Tkinter (interfaz gráfica) y fuentes
+# Tkinter (interfaz gráfica), fuentes y dependencias para OpenCV con soporte de ventanas
 sudo apt-get update
-sudo apt-get install -y python3-tk python3-venv fonts-roboto
+sudo apt-get install -y python3-tk python3-venv fonts-roboto libgtk2.0-dev pkg-config
 ```
 
 ### 2. Clone the repository
@@ -28,11 +29,16 @@ git clone https://github.com/<tu-usuario>/smart_mirror.git
 cd smart_mirror
 ```
 
+
 ### 3. Create virtual environment and install dependencies
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+# Asegúrate de NO tener instalada la versión headless de OpenCV:
+pip uninstall -y opencv-python-headless
+# Instala la versión normal de OpenCV (con soporte de ventanas):
+pip install opencv-python
 pip install -r requirements.txt
 ```
 
@@ -96,6 +102,112 @@ cp services/smartmirror.desktop ~/.config/autostart/
 
 The mirror will launch fullscreen after the desktop loads on every reboot.
 
+### USB Camera RTSP Stream (optional)
+
+If you have a USB camera connected and want to expose it as an RTSP stream (for Frigate or the Smart Mirror face detection), use **MediaMTX** via Docker.
+
+#### 1. Install Docker
+
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Verify:
+docker run hello-world
+docker compose version
+```
+
+#### 2. Create the MediaMTX stack
+
+```bash
+mkdir -p ~/mediamtx
+cd ~/mediamtx
+```
+
+Create `docker-compose.yml`:
+
+```yaml
+# docker-compose.yml
+version: "3.8"
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml
+```
+
+Create `mediamtx.yml`:
+
+```yaml
+# mediamtx.yml
+rtmp: no
+
+paths:
+  live:
+    source: publisher
+```
+
+#### 3. Start MediaMTX
+
+```bash
+cd ~/mediamtx
+docker compose up -d
+
+# Verify it started correctly:
+docker logs -f mediamtx
+```
+
+#### 4. Grant camera access and start the stream
+
+Make sure your user has access to the video device:
+
+```bash
+ls -l /dev/video0
+sudo usermod -aG video $USER
+# Log out and back in (or run: newgrp video)
+```
+
+Install ffmpeg if not present:
+
+```bash
+sudo apt-get install -y ffmpeg
+```
+
+Start publishing the USB camera to MediaMTX:
+
+```bash
+ffmpeg -f v4l2 -s 640x480 -i /dev/video0 \
+  -c:v h264_v4l2m2m -b:v 2M -r 15 -g 30 -an \
+  -f rtsp rtsp://localhost:8554/live
+```
+
+The stream will be available at:
+- **RTSP:** `rtsp://<PI_IP>:8554/live`
+
+#### 5. Use in Frigate
+
+```yaml
+cameras:
+  smartmirror_usb:
+    ffmpeg:
+      inputs:
+        - path: rtsp://<PI_IP>:8554/live
+          roles:
+            - detect
+```
+
+#### 6. Use in Smart Mirror (face detection via stream)
+
+```python
+FaceDetectorApp(source="rtsp://localhost:8554/live")
+```
+
+---
+
 ### Helper services (optional)
 
 These systemd services run background scripts for TV control and temperature monitoring:
@@ -109,6 +221,26 @@ sudo systemctl enable checkTv.service tempChecker.service
 sudo systemctl start checkTv.service tempChecker.service
 ```
 
+### Auto-start the camera stream (recommended)
+
+To ensure the USB camera RTSP stream is always available after boot, use the provided systemd service:
+
+```bash
+# Edit the service file if your user is not 'pi':
+nano services/usbcam_stream.service
+# (Change User=pi to your username if needed)
+
+sudo cp services/usbcam_stream.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable usbcam_stream.service
+sudo systemctl start usbcam_stream.service
+
+# Check status:
+sudo systemctl status usbcam_stream.service
+```
+
+This will automatically start the ffmpeg stream to MediaMTX on every boot, so the camera is always available for Frigate and the Smart Mirror.
+
 ### Python dependencies
 
 | Package | Purpose |
@@ -119,8 +251,15 @@ sudo systemctl start checkTv.service tempChecker.service
 | `ephem` | Astronomical calculations (moon, sun) |
 | `psutil` | System resource monitoring |
 | `Pillow` | Image processing (PIL) |
-| `opencv-python-headless` | Camera and face detection |
+| `opencv-python` | Camera and face detection (con soporte de ventanas) |
 | `RPi.GPIO` | Raspberry Pi GPIO pins |
+
+
+> **Nota importante sobre OpenCV:**
+> Si ves errores como "The function is not implemented. Rebuild the library with Windows, GTK+ 2.x or Cocoa support...", asegúrate de:
+> - Tener instaladas las dependencias del sistema: `libgtk2.0-dev pkg-config`
+> - Usar la versión normal de OpenCV (`opencv-python`), no la versión headless.
+> - Desinstalar `opencv-python-headless` si está presente.
 
 > **Note:** `tkinter` is required but is a system package — installed via `python3-tk` in step 1.
 

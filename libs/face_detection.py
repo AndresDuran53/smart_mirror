@@ -83,6 +83,8 @@ class FaceDetectorApp:
         self.no_face_counter = 10
         self.face_counter_delay = 8
         self.is_new_person_detected = False
+        self.last_processed_frame = None
+        self.last_detected_faces = []
 
     def run(self):
         try:
@@ -91,6 +93,8 @@ class FaceDetectorApp:
                 self.is_new_person_detected = False
                 return
             faces = self.face_detector.detect_faces(frame)
+            self.last_detected_faces = faces
+            self.last_processed_frame = frame.copy()
             person_detected_old = self.is_new_person_detected
             self.is_new_person_detected = self.is_person_detected(faces)
             if(self.is_new_person_detected and person_detected_old != self.is_new_person_detected):
@@ -103,6 +107,32 @@ class FaceDetectorApp:
             self.video_capture.delete()
             cv2.destroyAllWindows()
             self.is_new_person_detected = False
+
+    def get_processed_frame(self):
+        """Returns the last frame with detected faces drawn as rectangles (for UI display)"""
+        try:
+            from PIL import Image
+            
+            frame = self.video_capture.get_frame()
+            if frame is None:
+                return None
+            
+            faces = self.face_detector.detect_faces(frame)
+            self.last_detected_faces = faces
+            
+            # Draw rectangles on the frame
+            frame_with_faces = self.draw_faces(frame.copy(), faces)
+            
+            # Convert BGR to RGB for PIL
+            frame_rgb = cv2.cvtColor(frame_with_faces, cv2.COLOR_BGR2RGB)
+            
+            # Convert to PIL Image
+            pil_image = Image.fromarray(frame_rgb)
+            
+            return pil_image
+        except Exception as e:
+            log("Error: Cannot get processed frame. " + str(e))
+            return None
 
     def is_person_detected(self,faces):
         is_there_faces = len(faces)>0

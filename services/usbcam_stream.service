@@ -1,0 +1,17 @@
+[Unit]
+Description=USB Camera RTSP Stream (MediaMTX)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/ffmpeg \
+    -f v4l2 -s 640x480 -i /dev/video0 \
+    -c:v h264_v4l2m2m -b:v 2M -r 15 -g 30 -an \
+    -f rtsp rtsp://localhost:8554/live
+Restart=on-failure
+RestartSec=5
+User=pi
+SupplementaryGroups=video
+
+[Install]
+WantedBy=multi-user.target
