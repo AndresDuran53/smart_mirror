@@ -29,7 +29,11 @@ class HomeAssistantServices:
             'Content-Type': 'application/json'
         }
         # Realizar la petición HTTP GET
+        print(f"Requesting events for calendar {calendar_id} with URL: {local_calendar_url}")
         response = requests.get(local_calendar_url, headers=headers)
+        print(f"Response status code: {response.status_code}")
+        print(f"Response content: {response.json()}")
+        print(f"Response content: {response.text}")
         list_events_data = response.json()
         list_events = []
         for event in list_events_data:
