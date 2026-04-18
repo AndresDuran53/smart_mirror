@@ -1,5 +1,7 @@
 import os
 import gc
+from tkinter import PhotoImage
+from PIL import ImageTk
 from libs.iterated_thread import IteratedThreadWithDelay
 from libs.ui_views.ui_controller import UIController
 from libs.events_manager import EventHandler
@@ -23,7 +25,7 @@ except:
 class Application:
     is_person_detected = False
     has_show_information = False
-    has_to_show_camera = True
+    has_to_show_camera = False
     stored_events = []
 
     def __init__(self):
@@ -48,6 +50,7 @@ class Application:
         self.event_handler = EventHandler(config_data)
         self.icon_manager = Icons(localPathImages)
         self.image_manager = Images(localPathImages)
+        self.current_photo = None  # Keep reference to current PhotoImage
 
         #Creating Moon calculador
         self.celestial_body_viewer = CelestialBodyViewer()
@@ -147,9 +150,13 @@ class Application:
         if(self.has_to_show_camera):
             try:
                 # Get frame directly from face detection (with rectangles drawn)
-                frame = self.face_recognition.get_processed_frame()
-                if(frame is not None):
-                    self.ui_controller.update_videocamera_photo(frame)
+                pil_frame = self.face_recognition.get_processed_frame()
+                if(pil_frame is not None):
+                    # Convert PIL Image to PhotoImage for tkinter
+                    photo = ImageTk.PhotoImage(pil_frame)
+                    self.ui_controller.update_videocamera_photo(photo)
+                    # Keep a reference to prevent garbage collection
+                    self.current_photo = photo
                     gc.collect()
             except Exception as e:
                 log("Unable to update videoframe: " + str(e))
