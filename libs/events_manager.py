@@ -8,6 +8,7 @@ class EventHandler():
 
     def get_event_list(self):
         list_calendars = self.homeassistant_service.get_calendars_events()
+        print(f"Total calendars retrieved: {len(list_calendars)}")
         list_event = []
         for calendar in list_calendars:
             list_event = list_event + self.events_from_calendar(calendar)
@@ -16,7 +17,9 @@ class EventHandler():
     def events_from_calendar(self,calendar):
         list_events = []
         owner = calendar.get_owner_name()
+        print(f"Processing calendar for owner: {owner}")
         for event in calendar.events:
+            print(f"Processing event: {event.name}")
             title = event.name
             start_time = event.start_time
             end_time = event.end_time
@@ -27,5 +30,6 @@ class EventHandler():
     def format_event_list(self,list_event):
         formatted_events = []
         for evento in list_event:
+            print(f"Formatting event: {evento.get_title()}")
             formatted_events.append(f"{evento.get_title()}")
         return formatted_events
