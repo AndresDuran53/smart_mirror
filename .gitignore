@@ -133,4 +133,5 @@ secrets.py
 configuration.json
 smartMirror.mainFail.log
 scripts/imageSlider/images/*
+scripts/imageSlider/images_*/*
 assets/wifi_password.png
